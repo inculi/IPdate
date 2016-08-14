@@ -11,31 +11,27 @@ if not os.path.isfile(os.path.expanduser('~') + "/email.dat"):
     username = raw_input("gmail username: ")
     password = raw_input("gmail password: ")
     email = raw_input("email to send notifications to: ")
-    acctFile = open(os.path.expanduser('~') + '/email.dat', 'w+')
-    acctFile.write(username+'\n'+password+'\n'+email)
-    acctFile.close()
+    f = open(os.path.expanduser('~') + '/email.dat', 'w+')
+    f.write(username+'\n'+password+'\n'+email)
+    f.close()
 
-else:
-    print(os.path.expanduser('~') + "/mail.dat")
-    with open(os.path.expanduser('~') + "/email.dat", 'r') as f:
-        content = f.readlines()
-        print content
-        for x in range(0, 2):
-            if "\n" in content[x]:
-                content[x] = content[x].rsplit("\n")[0]
-        username = content[0]
-        password = content[1]
-        email = content[2]
-        print content
-
+with open(os.path.expanduser('~') + "/email.dat") as f:
+    content = f.readlines()
+    for x in range(0, 2):
+        if "\n" in content[x]:
+            content[x] = content[x].rsplit("\n")[0]
+    username = content[0]
+    password = content[1]
+    email = content[2]
+    print content
 server = smtplib.SMTP('smtp.gmail.com', 587)
 server.starttls()
 server.login(username, password)
 
-msg = "" # text that we shall append the infomation to
+msg = "To: " + email + "\n"
+msg += "Subject: Updated IP Information\n\n" # text that we shall append the infomation to
 msg += "Public: " + getip.get_pub_ip() + "\n"
 msg += "Private: " + getip.get_priv_ip() + "\n"
 
 server.sendmail("", email, msg)
-server.sendmail
 server.quit()
