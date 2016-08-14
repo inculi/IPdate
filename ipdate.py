@@ -47,7 +47,7 @@ def get_priv_ip():
     else:
         print("You must have a strange OS. What does platform.system() return?")
 
-if platform.system() == 'Darwin' or platform.system() == 'Linux':
+if platform.system() == 'Darwin':
     # check to see if we have the previous email recip. saved.
     # if not, ask for the email.
     if not os.path.isfile(os.path.expanduser('~') + "/myemail.dat"):
@@ -72,7 +72,7 @@ if platform.system() == 'Darwin' or platform.system() == 'Linux':
     print("Sending email to "+email+". Make sure to check your Junk folder.")
     os.system("sendmail " + email + " < msg.txt")
     print("Message sent.")
-elif platform.system() == 'Windows':
+elif platform.system() == 'Windows' or platform.system() == 'Linux':
     if not os.path.isfile(os.path.expanduser('~') + "/email.dat"):
         print "No email credentials found. Please enter them now:"
         username = raw_input("gmail username: ")
