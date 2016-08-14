@@ -1,6 +1,7 @@
 import urllib2
 import os
 import subprocess
+import platform
 
 def get_pub_ip():
     print("Finding public IP. Consulting amazonaws...")
@@ -14,20 +15,33 @@ def get_pub_ip():
 
 def get_priv_ip():
     print("Finding private IP. Checking network interfaces...")
+    if platform.system() == 'Darwin': # OS X
+        interfaces = ['en0','en1'] # en0 is ethernet, en1 is wireless.
+        for interface in interfaces:
+            try:
+                command = str("ipconfig getifaddr "+interface)
+                output = subprocess.check_output(command, shell=True).replace("\n","")
+                print("Found IP on "+interface+": " + output)
+                return output
+            except:
+                pass
 
-    # en0
-    try:
-        en0 = subprocess.check_output("ipconfig getifaddr en0", shell=True).replace("\n","")
-        print("Found IP on en0 (Ethernet): " + en0)
-        return en0
-    except:
-        pass
-
-    # en1
-    try:
-        en1 = subprocess.check_output("ipconfig getifaddr en1", shell=True).replace("\n","")
-        print("Found IP on en1 (Wireless): " + en1)
-        return en1
-    except:
+        # If it makes it to here, it couldn't find anything and we have a problem.
         print("No private addresses found. Consult ifconfig.")
         return 1
+
+    elif platform.system() == 'Windows': # OS X
+        import socket # we only need this if using windows. left here 4 optimiz.
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        s.connect(('google.com', 0))
+        priv_ip = s.getsockname()[0]
+        print("Found IP: " + priv_ip)
+        return priv_ip
+
+    elif platform.system() == 'Linux': # OS X
+        output = subprocess.check_output("hostname -I", shell=True).replace("\n","")
+        print("Found IP: " + output)
+        return output
+
+    else:
+        print("You must have a strange OS. What does platform.system() return?")
